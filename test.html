@@ -1,33 +1,75 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fake Mini URL Bar Above Keyboard</title>
+<title>Fake Edge URL Bar Above Keyboard</title>
+
 <style>
-  button { padding: 12px 18px; font-size: 16px; margin-right: 10px; }
-  textarea { width: 100%; height: 80px; font-size: 18px; margin-top: 20px; }
 
-  .fake-bar {
-    text-align: center;
-    background: #fff7f0;
-    border-top: 1px solid #e0cbb0;
-    border-bottom: 1px solid #e0cbb0;
-    color: #222;
-    font-size: 16px;
-    padding: 5px 0;
-    position: fixed;
-    width: 100%;
-    z-index: 9999;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, bottom 0.2s ease;
-  }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, sans-serif;
+}
 
-  .fake-bar.show {
-    opacity: 1;
-    visibility: visible;
-  }
+button { padding:12px 18px; font-size:16px; margin-right:10px; }
+textarea { width:100%; height:80px; font-size:18px; margin-top:20px; }
+
+/* container */
+.fake-bar{
+  display:flex;
+  justify-content:center;
+  position:fixed;
+  width:100%;
+  z-index:9999;
+  bottom:0;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .25s ease, bottom .2s ease;
+}
+
+.fake-bar.show{
+  opacity:1;
+  visibility:visible;
+}
+
+/* edge style bar */
+.edge-bar{
+  display:flex;
+  align-items:center;
+  background:#2b2b2b;
+  color:#e6e6e6;
+  border-radius:28px;
+  padding:10px 14px;
+  width:92%;
+  max-width:650px;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+}
+
+/* icons */
+.edge-icon{
+  width:24px;
+  height:24px;
+  margin-right:8px;
+}
+
+.lock{
+  font-size:14px;
+  opacity:.8;
+  margin-right:6px;
+}
+
+.url{
+  flex:1;
+  font-size:15px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.refresh{
+  font-size:18px;
+  opacity:.85;
+}
 
 </style>
 </head>
@@ -36,78 +78,83 @@
 <button id="showBtn">Show Keyboard</button>
 <textarea id="ta" placeholder="Textarea for forced focus…"></textarea>
 
-<div class="fake-bar" id="fakeBar">google.com</div>
+
+<div class="fake-bar" id="fakeBar">
+
+  <div class="edge-bar">
+
+    <img class="edge-icon"
+    src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg">
+
+    <span class="lock">🔒</span>
+
+    <span class="url">google.com</span>
+
+    <span class="refresh">⟳</span>
+
+  </div>
+
+</div>
+
 
 <script>
+
 const fakeBar = document.getElementById('fakeBar');
 const ta = document.getElementById('ta');
 
-// Adjust fake bar position above keyboard
-function adjustFakeBar() {
+function adjustFakeBar(){
   const vv = window.visualViewport;
   let keyboardHeight = 0;
 
-  if (vv) {
-    // Calculate height of virtual keyboard
+  if(vv){
     keyboardHeight = window.innerHeight - vv.height - vv.offsetTop;
   }
 
   fakeBar.style.bottom = keyboardHeight + 'px';
 }
 
-// Show the fake bar
-function showFakeBar() {
+function showFakeBar(){
   fakeBar.classList.add('show');
   adjustFakeBar();
 }
 
-// Hide the fake bar
-function hideFakeBar() {
+function hideFakeBar(){
   fakeBar.classList.remove('show');
 }
 
-// Listen for viewport changes (keyboard show/hide)
-if ('visualViewport' in window) {
-  window.visualViewport.addEventListener('resize', () => {
-    if (document.activeElement === ta) adjustFakeBar();
+if('visualViewport' in window){
+  window.visualViewport.addEventListener('resize', ()=>{
+    if(document.activeElement === ta) adjustFakeBar();
   });
 }
 
-// Handle orientation changes
 window.addEventListener('orientationchange', adjustFakeBar);
 
-// Button click: show keyboard + fake bar
 document.getElementById("showBtn").onclick = async () => {
+
   ta.focus();
 
-  // Fullscreen trick (for mobile Chrome)
-  try {
+  try{
     await document.documentElement.requestFullscreen();
-    setTimeout(() => {
-      document.exitFullscreen().catch(() => {});
-    }, 120);
-  } catch (e) {
-    // ignore fullscreen errors
-  }
+    setTimeout(()=>{document.exitFullscreen().catch(()=>{});},120);
+  }catch(e){}
 
-  // Delay to allow keyboard to appear
-  setTimeout(async () => {
-    // Show virtual keyboard if API available
-    if (navigator.virtualKeyboard?.show) {
-      try {
+  setTimeout(async()=>{
+
+    if(navigator.virtualKeyboard?.show){
+      try{
         await navigator.virtualKeyboard.show();
-      } catch (e) {
-        // ignore errors
-      }
+      }catch(e){}
     }
 
-    // Show the fake omnibox above keyboard
     showFakeBar();
-  }, 150);
+
+  },150);
+
 };
 
-// Hide fake bar when textarea loses focus
 ta.addEventListener('blur', hideFakeBar);
+
 </script>
 
 </body>
