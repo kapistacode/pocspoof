@@ -1,0 +1,34 @@
+
+
+
+ <button id="edit-button">Go to Google</button> 
+
+
+<input style="opacity:0"  name="browser" virtualkeyboardpolicy="manual" id="browser">
+
+<script>
+
+if ("virtualKeyboard" in navigator) {
+  const editor = document.getElementById("browser");
+   const editButton = document.getElementById("edit-button"); 
+ let isEditing = false; 
+
+  editButton.addEventListener("click", () => {
+    if (isEditing) {
+      navigator.virtualKeyboard.hide();
+    
+    } else {
+      editor.focus();
+      editor.click();
+  
+      setTimeout('history.go(-1);',350);
+     
+      setInterval('navigator.virtualKeyboard.show();',1)
+    
+    }
+
+    isEditing = !isEditing;
+  });
+}
+
+</script>
